@@ -29,7 +29,7 @@ class Desf {
   }
 
   /**
-   * .command() adds a new command to
+   * .command() adds a new command
    */
   command(
     name: string,

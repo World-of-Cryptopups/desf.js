@@ -13,6 +13,13 @@ import Desf from "desf";
 // create a new instance
 const bot = new Desf(process.env.token, { prefix: "!" });
 
+// you can handle other events using the `.client`
+// `message` event is handled in the `.run()` function
+// so it is better for not to have it
+bot.client.on("ready", () => {
+  console.log("Client is ready!");
+});
+
 bot.command("hello", (message, args) => {
   message.send("Hello! This is Desf!");
 });
