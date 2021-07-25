@@ -1,20 +1,30 @@
-import { Client, Collection, Message } from "discord.js";
-import { ICommandProps, IOptionCommandProps } from "../types/commands";
-import { DesfOptions } from "../types/desf";
+import {
+  Client,
+  ClientEvents,
+  ClientOptions,
+  Collection,
+  Message,
+} from "discord.js";
+import { ICommandProps, IOptionCommandProps } from "../typings/commands";
+import { DesfOptions } from "../typings/desf";
 
 /**
  * Create a new dispress object.
  */
 class Desf {
-  _token: string;
-  _client: Client;
-  _options?: DesfOptions;
-  _commands: Collection<string, ICommandProps>;
+  private _token: string;
+  client: Client;
+  private _options?: DesfOptions;
+  private _commands: Collection<string, ICommandProps>;
 
-  constructor(token: string, options?: DesfOptions) {
+  constructor(
+    token: string,
+    options?: DesfOptions,
+    clientOptions?: ClientOptions,
+  ) {
     this._token = token;
     this._options = options;
-    this._client = new Client();
+    this.client = new Client(clientOptions);
     this._commands = new Collection();
   }
 
@@ -40,13 +50,8 @@ class Desf {
    *
    */
   run() {
-    // on ready app
-    this._client.on("ready", () => {
-      console.log("Ready!");
-    });
-
     // on message
-    this._client.on("message", (message) => {
+    this.client.on("message", (message) => {
       if (
         !message.content.startsWith(this._options?.prefix || "") ||
         message.author.bot
@@ -73,8 +78,8 @@ class Desf {
       }
     });
 
-    // run app,
-    this._client.login(this._token);
+    // login and run app
+    this.client.login(this._token);
   }
 }
 
