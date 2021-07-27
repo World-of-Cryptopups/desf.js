@@ -27,6 +27,10 @@ bot.command("hello", (message, args) => {
 bot.run();
 ```
 
+## Note
+
+This is only good for small bot applications, please use the default library for larger projects.
+
 ##
 
 #### &copy; 2021 | [MIT](./LICENSE)
