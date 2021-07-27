@@ -1,5 +1,7 @@
 import { Message } from "discord.js";
 
+export type ICommandFunctionProps = (message: Message, args: string[]) => void;
+
 export interface ICommandProps extends IOptionCommandProps {
   name: string;
   execute: (message: Message, args: string[]) => void;

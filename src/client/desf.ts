@@ -5,13 +5,19 @@ import {
   Collection,
   Message,
 } from "discord.js";
-import { ICommandProps, IOptionCommandProps } from "../typings/commands";
+import {
+  ICommandFunctionProps,
+  ICommandProps,
+  IOptionCommandProps,
+} from "../typings/commands";
 import { DesfOptions } from "../typings/desf";
+import { IMiddlewareFunctionProps } from "../typings/middlewares";
 
 /**
  * Create a new dispress object.
  */
 class Desf {
+  private _middleWares: IMiddlewareFunctionProps[] = [];
   private _token: string;
   client: Client;
   private _options?: DesfOptions;
@@ -29,11 +35,18 @@ class Desf {
   }
 
   /**
+   * .user() adds a message parsing middleware
+   */
+  use(f: IMiddlewareFunctionProps) {
+    this._middleWares.push(f);
+  }
+
+  /**
    * .command() adds a new command
    */
   command(
     name: string,
-    execute: (message: Message, args: string[]) => {},
+    execute: ICommandFunctionProps,
     options?: IOptionCommandProps,
   ) {
     const _command: ICommandProps = {
@@ -66,6 +79,14 @@ class Desf {
       const command = args?.shift()?.toLowerCase() || "";
 
       if (!this._commands.has(command)) return;
+
+      // run each middleware
+      for (const i of this._middleWares) {
+        const c = i(message, args);
+        if (!c) {
+          return;
+        }
+      }
 
       // execute corresponding command
       try {
