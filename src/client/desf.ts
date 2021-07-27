@@ -124,10 +124,11 @@ class Desf {
 
       // parse command validation (with aliases if there is)
       const cmd =
-        this._commands.get("command") ||
+        this._commands.get(command) ||
         this._commands.find(
           (cmd) => (cmd.aliases || false) && cmd.aliases.includes(command),
         );
+      console.log(cmd);
       if (!cmd) return;
 
       /* START - COOLDOWN */
