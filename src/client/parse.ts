@@ -1,9 +1,7 @@
-import { ICommandOptionalFunctionProps } from "../typings/commands";
+type AnyFunction = (...args: any[]) => void;
 
-// run the custom value error handler and parser
-export const runParser = (
-  f?: ICommandOptionalFunctionProps,
-): string | boolean | undefined => {
+// run the custom function
+export const runParser = (f?: AnyFunction): string | boolean | undefined => {
   if (!f) return;
 
   try {

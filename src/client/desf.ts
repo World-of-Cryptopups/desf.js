@@ -13,7 +13,7 @@ import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { runParser } from "./parse";
 
 /**
- * Create a new dispress object.
+ * Create a new Desf object.
  */
 class Desf {
   private _middleWares: IMiddlewareFunctionProps[] = [];
@@ -39,7 +39,10 @@ class Desf {
   }
 
   /**
-   * `.onError` is a custom error handler for commands and middlewares
+   * `.onError` is a custom error handler.
+   * - `command` handles errors during running command functions
+   * - `middleware` handles errors during running middleware functions
+   * - `parse` handles errors during parsing of arguments or command
    */
   onError(e: IErrorEventOptions, f: IErrorFunctionProps) {
     switch (e) {
@@ -58,14 +61,17 @@ class Desf {
   }
 
   /**
-   * .user() adds a message parsing middleware
+   * .user() adds a message parsing middleware.
+   * Middlewares are setup to return boolean values in order to know if to continue or not.
+   * If there is an error thrown in a middlware, it will be handled by `.onError('middleware', () => {})` function.
    */
   use(f: IMiddlewareFunctionProps) {
     this._middleWares.push(f);
   }
 
   /**
-   * .command() adds a new command
+   * .command() adds a new command to the application.
+   * It adds a new item to a Collection to be parsed.
    */
   command(
     name: string,
@@ -81,6 +87,10 @@ class Desf {
     this._commands.set(name, _command);
   }
 
+  /**
+   * This command loops over the commands and adds the ones with
+   * cooldowns configured to the new `_cooldowns` Collection.
+   */
   private _setupCommandCooldowns() {
     for (const [, cmd] of this._commands) {
       if (cmd.cooldown && cmd.cooldown.seconds) {
@@ -90,8 +100,8 @@ class Desf {
   }
 
   /**
-   * `.run()` runs the bot application
-   *
+   * `.run()` runs the bot application.
+   * All parsing and handling of commands is handled in here.
    */
   run() {
     // setup cooldowns
@@ -118,7 +128,6 @@ class Desf {
         this._commands.find(
           (cmd) => (cmd.aliases || false) && cmd.aliases.includes(command),
         );
-      console.log(cmd);
       if (!cmd) return;
 
       /* START - COOLDOWN */
