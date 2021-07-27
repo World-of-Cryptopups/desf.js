@@ -16,9 +16,13 @@ bot.command("error", (message, args) => {
   throw new Error("custom error handler");
 });
 
-bot.command("sample", async (message, args) => {
-  message.reply("isn't this amazing?");
-  message.channel.send("this is cool!");
-});
+bot.command(
+  "sample",
+  async (message, args) => {
+    message.reply("isn't this amazing?");
+    message.channel.send("this is cool!");
+  },
+  { aliases: ["sam"] },
+);
 
 bot.run();

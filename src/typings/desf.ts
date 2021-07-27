@@ -1,11 +1,10 @@
 import { Message } from "discord.js";
-import { ICommandFunctionProps } from "./commands";
 
 export type DesfOptions = {
   prefix?: string;
 };
 
-export type IErrorEventOptions = "command" | "middleware";
+export type IErrorEventOptions = "command" | "middleware" | "parse";
 export type IErrorFunctionArgsProps = {
   error?: any;
   message?: Message;
