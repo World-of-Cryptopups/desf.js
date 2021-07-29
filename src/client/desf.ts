@@ -2,12 +2,12 @@ import { Client, ClientOptions, Collection } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps
+  IOptionCommandProps,
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
-  IErrorFunctionProps
+  IErrorFunctionProps,
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { isValueTrue, runParser } from "./parse";
@@ -29,7 +29,6 @@ class Desf {
   private _cooldowns: Collection<string, Collection<string, number>>;
   private _errCommandHandler?: IErrorFunctionProps;
   private _errMiddlewareHandler?: IErrorFunctionProps;
-  private _errParseHandler?: IErrorFunctionProps;
 
   constructor(
     token: string,
@@ -52,14 +51,9 @@ class Desf {
   onError(e: IErrorEventOptions, f: IErrorFunctionProps) {
     switch (e) {
       case "command":
-        this._errCommandHandler = f;
-        break;
+        return (this._errCommandHandler = f);
       case "middleware":
-        this._errMiddlewareHandler = f;
-        break;
-      case "parse":
-        this._errParseHandler = f;
-        break;
+        return (this._errMiddlewareHandler = f);
       default:
         return;
     }
@@ -158,12 +152,7 @@ class Desf {
           // if not yet expired, run the error handler
           if (now < ex) {
             const check = runParser(cmd.cooldown?.error);
-            if (typeof check === "string" || !check) {
-              if (this._errParseHandler) {
-                this._errParseHandler({ error: cmd, message, args });
-              }
-              return;
-            }
+            if (typeof check === "string" || !check) return;
           }
         } else {
           ts?.set(message.author.id, now);
@@ -179,7 +168,7 @@ class Desf {
       // run each middleware
       for (const i of this._middleWares) {
         try {
-          const check = i(message, args, {client: this.client});
+          const check = i(message, args, { client: this.client });
 
           if (!check) {
             return;
@@ -207,17 +196,7 @@ class Desf {
       /* START GUILDONLY VALIDATION */
       if (cmd.guildOnly && message.channel.type === "dm") {
         const check = runParser(cmd.guildOnly.error);
-        if (!isValueTrue(check)) {
-          if (this._errParseHandler) {
-            this._errParseHandler({
-              error: check,
-              message,
-              args,
-              client: this.client,
-            });
-          }
-          return;
-        }
+        if (!isValueTrue(check)) return;
       }
       /* END GUILDONLY VALIDATION */
 
@@ -227,52 +206,22 @@ class Desf {
       // exact args has priority over minimum and maximum args
       if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
         const check = runParser(cmd.args?.error?.exact);
-        if (!isValueTrue(check)) {
-          if (this._errParseHandler) {
-            this._errParseHandler({
-              error: check,
-              message,
-              args,
-              client: this.client,
-            });
-          }
-          return;
-        }
+        if (!isValueTrue(check)) return;
       } else {
         // minimum args
         if (cmd.args?.values?.min && args.length < cmd.args.values.min) {
           const check = runParser(cmd.args?.error?.min);
-          if (!isValueTrue(check)) {
-            if (this._errParseHandler) {
-              this._errParseHandler({
-                error: check,
-                message,
-                args,
-                client: this.client,
-              });
-            }
-            return;
-          }
+          if (!isValueTrue(check)) return;
         }
         // maximum args
         if (cmd.args?.values?.max && args.length > cmd.args.values.max) {
           const check = runParser(cmd.args?.error?.max);
-          if (!isValueTrue(check)) {
-            if (this._errParseHandler) {
-              this._errParseHandler({
-                error: check,
-                message,
-                args,
-                client: this.client,
-              });
-            }
-            return;
-          }
+          if (!isValueTrue(check)) return;
         }
       }
       /* END - VALIDATE ARGS */
 
-      // execute corresponding command
+      /// EXECUTE CORRESPONDING COMMAND
       try {
         cmd.execute(message, args, { client: this.client });
       } catch (e) {

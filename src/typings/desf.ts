@@ -5,7 +5,7 @@ export type DesfOptions = {
   strictCommandCasing?: boolean; // uppercase and lowercase commands are similar
 };
 
-export type IErrorEventOptions = "command" | "middleware" | "parse";
+export type IErrorEventOptions = "command" | "middleware";
 export type IErrorFunctionArgsProps = {
   error?: any;
   message?: Message;
