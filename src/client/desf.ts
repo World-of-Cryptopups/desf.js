@@ -2,15 +2,15 @@ import { Client, ClientOptions, Collection } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps,
+  IOptionCommandProps
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
-  IErrorFunctionProps,
+  IErrorFunctionProps
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
-import { runParser } from "./parse";
+import { isValueTrue, runParser } from "./parse";
 
 /**
  * Create a new Desf object.
@@ -128,7 +128,6 @@ class Desf {
         this._commands.find(
           (cmd) => (cmd.aliases || false) && cmd.aliases.includes(command),
         );
-      console.log(cmd);
       if (!cmd) return;
 
       /* START - COOLDOWN */
@@ -181,7 +180,12 @@ class Desf {
           if (this._errMiddlewareHandler) {
             // wrap error handler in a try-catch in order to avoid unnecessary crashing of app
             try {
-              this._errMiddlewareHandler({ error: e, message, args });
+              this._errMiddlewareHandler({
+                error: e,
+                message,
+                args,
+                client: this.client,
+              });
             } catch (e) {
               console.error(
                 `An error has occured on the custom error handler!\nError: ${e}`,
@@ -192,11 +196,11 @@ class Desf {
       }
 
       /* START GUILDONLY VALIDATION */
-      if (cmd.guildOnly) {
+      if (cmd.guildOnly && message.channel.type === "dm") {
         const check = runParser(cmd.guildOnly.error);
-        if (typeof check === "string" || !check) {
+        if (!isValueTrue(check)) {
           if (this._errParseHandler) {
-            this._errParseHandler({ error: cmd, message, args });
+            this._errParseHandler({ error: check, message, args, client: this.client });
           }
           return;
         }
@@ -209,9 +213,9 @@ class Desf {
       // exact args has priority over minimum and maximum args
       if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
         const check = runParser(cmd.args?.error?.exact);
-        if (typeof check === "string" || !check) {
+        if (!isValueTrue(check)) {
           if (this._errParseHandler) {
-            this._errParseHandler({ error: cmd, message, args });
+            this._errParseHandler({ error: check, message, args, client: this.client });
           }
           return;
         }
@@ -219,9 +223,9 @@ class Desf {
         // minimum args
         if (cmd.args?.values?.min && args.length < cmd.args.values.min) {
           const check = runParser(cmd.args?.error?.min);
-          if (typeof check === "string" || !check) {
+          if (!isValueTrue(check)) {
             if (this._errParseHandler) {
-              this._errParseHandler({ error: cmd, message, args });
+              this._errParseHandler({ error: check, message, args, client: this.client });
             }
             return;
           }
@@ -229,9 +233,9 @@ class Desf {
         // maximum args
         if (cmd.args?.values?.max && args.length > cmd.args.values.max) {
           const check = runParser(cmd.args?.error?.max);
-          if (typeof check === "string" || !check) {
+          if (!isValueTrue(check)) {
             if (this._errParseHandler) {
-              this._errParseHandler({ error: cmd, message, args });
+              this._errParseHandler({ error: check, message, args, client: this.client });
             }
             return;
           }
@@ -241,13 +245,13 @@ class Desf {
 
       // execute corresponding command
       try {
-        cmd.execute(message, args);
+        cmd.execute(message, args, { client: this.client });
       } catch (e) {
         // custom handle error by defined function
         if (this._errCommandHandler) {
           // wrap error handler in a try-catch in order to avoid unnecessary crashing of app
           try {
-            this._errCommandHandler({ error: e, message, args });
+            this._errCommandHandler({ error: e, message, args, client: this.client });
           } catch (e) {
             console.error(
               `An error has occured on the custom error handler!\nError: ${e}`,

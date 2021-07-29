@@ -1,7 +1,7 @@
 type AnyFunction = (...args: any[]) => void;
 
 // run the custom function
-export const runParser = (f?: AnyFunction): string | boolean | undefined => {
+const runParser = (f?: AnyFunction): string | boolean | undefined => {
   if (!f) return;
 
   try {
@@ -12,3 +12,13 @@ export const runParser = (f?: AnyFunction): string | boolean | undefined => {
 
   return true;
 };
+
+
+
+const isValueTrue = (data: any) => {
+  return data === true;
+}
+
+
+
+export { runParser, isValueTrue };

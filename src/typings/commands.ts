@@ -1,6 +1,12 @@
-import { Message } from "discord.js";
+import { Client, Message } from "discord.js";
 
-export type ICommandFunctionProps = (message: Message, args: string[]) => void;
+export type ICommandFunctionProps = (
+  message: Message,
+  args?: string[],
+  options?: {
+    client?: Client;
+  },
+) => void;
 export type ICommandOptionalFunctionProps = (
   message?: Message,
   args?: string[],
@@ -8,7 +14,7 @@ export type ICommandOptionalFunctionProps = (
 
 export interface ICommandProps extends IOptionCommandProps {
   name: string;
-  execute: (message: Message, args: string[]) => void;
+  execute: ICommandFunctionProps;
 }
 
 export type IOptionCommandProps = {
