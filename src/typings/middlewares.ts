@@ -4,6 +4,6 @@ export type IMiddlewareFunctionProps = (
   message: Message,
   args: string[],
   options?: {
-    client: Client;
+    client?: Client;
   },
 ) => boolean;

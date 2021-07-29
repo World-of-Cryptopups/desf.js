@@ -2,12 +2,12 @@ import { Client, ClientOptions, Collection } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps,
+  IOptionCommandProps
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
-  IErrorFunctionProps,
+  IErrorFunctionProps
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { isValueTrue, runParser } from "./parse";
@@ -129,7 +129,7 @@ class Desf {
         .trim()
         .split(/ +/);
       let command = args?.shift() || "";
-      if (this._options?.strictCommandCasing) command = command.toLowerCase();
+      if (!this._options?.strictCommandCasing) command = command.toLowerCase();
 
       // parse command validation (with aliases if there is)
       const cmd =
@@ -179,7 +179,7 @@ class Desf {
       // run each middleware
       for (const i of this._middleWares) {
         try {
-          const check = i(message, args);
+          const check = i(message, args, {client: this.client});
 
           if (!check) {
             return;
