@@ -2,18 +2,23 @@ import { Client, ClientOptions, Collection } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps
+  IOptionCommandProps,
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
-  IErrorFunctionProps
+  IErrorFunctionProps,
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { isValueTrue, runParser } from "./parse";
 
 /**
- * Create a new Desf object.
+ * Create a new Desf instance.
+ *  - Options:
+ *    - `prefix` is the bot's command prefix
+ *    - `strictCommandCasing` will make commands of similar name but different
+ *      casing different. Like so, comand `hello` will be different from `Hello` when called, similar with aliases.
+ *      Defaults to true.
  */
 class Desf {
   private _middleWares: IMiddlewareFunctionProps[] = [];
@@ -32,7 +37,7 @@ class Desf {
     clientOptions?: ClientOptions,
   ) {
     this._token = token;
-    this._options = options;
+    this._options = { strictCommandCasing: true, ...options };
     this.client = new Client(clientOptions);
     this._commands = new Collection();
     this._cooldowns = new Collection();
@@ -84,7 +89,10 @@ class Desf {
       ...options,
     };
 
-    this._commands.set(name, _command);
+    this._commands.set(
+      this._options?.strictCommandCasing ? name : name.toLowerCase(),
+      _command,
+    );
   }
 
   /**
@@ -120,7 +128,8 @@ class Desf {
         .slice(this._options?.prefix?.length)
         .trim()
         .split(/ +/);
-      const command = args?.shift()?.toLowerCase() || "";
+      let command = args?.shift() || "";
+      if (this._options?.strictCommandCasing) command = command.toLowerCase();
 
       // parse command validation (with aliases if there is)
       const cmd =
@@ -200,7 +209,12 @@ class Desf {
         const check = runParser(cmd.guildOnly.error);
         if (!isValueTrue(check)) {
           if (this._errParseHandler) {
-            this._errParseHandler({ error: check, message, args, client: this.client });
+            this._errParseHandler({
+              error: check,
+              message,
+              args,
+              client: this.client,
+            });
           }
           return;
         }
@@ -215,7 +229,12 @@ class Desf {
         const check = runParser(cmd.args?.error?.exact);
         if (!isValueTrue(check)) {
           if (this._errParseHandler) {
-            this._errParseHandler({ error: check, message, args, client: this.client });
+            this._errParseHandler({
+              error: check,
+              message,
+              args,
+              client: this.client,
+            });
           }
           return;
         }
@@ -225,7 +244,12 @@ class Desf {
           const check = runParser(cmd.args?.error?.min);
           if (!isValueTrue(check)) {
             if (this._errParseHandler) {
-              this._errParseHandler({ error: check, message, args, client: this.client });
+              this._errParseHandler({
+                error: check,
+                message,
+                args,
+                client: this.client,
+              });
             }
             return;
           }
@@ -235,7 +259,12 @@ class Desf {
           const check = runParser(cmd.args?.error?.max);
           if (!isValueTrue(check)) {
             if (this._errParseHandler) {
-              this._errParseHandler({ error: check, message, args, client: this.client });
+              this._errParseHandler({
+                error: check,
+                message,
+                args,
+                client: this.client,
+              });
             }
             return;
           }
@@ -251,7 +280,12 @@ class Desf {
         if (this._errCommandHandler) {
           // wrap error handler in a try-catch in order to avoid unnecessary crashing of app
           try {
-            this._errCommandHandler({ error: e, message, args, client: this.client });
+            this._errCommandHandler({
+              error: e,
+              message,
+              args,
+              client: this.client,
+            });
           } catch (e) {
             console.error(
               `An error has occured on the custom error handler!\nError: ${e}`,

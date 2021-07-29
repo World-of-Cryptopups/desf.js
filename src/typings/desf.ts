@@ -2,6 +2,7 @@ import { Client, Message } from "discord.js";
 
 export type DesfOptions = {
   prefix?: string;
+  strictCommandCasing?: boolean; // uppercase and lowercase commands are similar
 };
 
 export type IErrorEventOptions = "command" | "middleware" | "parse";
