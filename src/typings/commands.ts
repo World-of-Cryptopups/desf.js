@@ -2,8 +2,8 @@ import { Client, Message } from "discord.js";
 
 export type ICommandFunctionProps = (
   message: Message,
-  args?: string[],
-  options?: {
+  args: string[],
+  options: {
     client?: Client;
   },
 ) => void;

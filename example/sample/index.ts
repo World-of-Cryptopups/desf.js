@@ -13,7 +13,7 @@ bot.onError("command", ({ error }) => {
   console.error(error);
 });
 
-bot.command("error", (message, args) => {
+bot.command("error", (message, args, { client }) => {
   message.channel.send("this will error!");
 
   throw new Error("custom error handler");
