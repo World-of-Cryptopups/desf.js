@@ -81,6 +81,11 @@ class Desf {
       name,
       execute,
       ...options,
+
+      // this will lowercase all command aliases in cooperation with `strictCommandCasing` if set to false
+      aliases: this._options?.strictCommandCasing
+        ? options?.aliases
+        : options?.aliases?.map((e) => e.toLowerCase()),
     };
 
     this._commands.set(

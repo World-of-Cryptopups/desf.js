@@ -1,6 +1,9 @@
 import Desf from "../../src";
 
-const bot = new Desf(process.env.TOKEN || "", { prefix: "!" });
+const bot = new Desf(process.env.TOKEN || "", {
+  prefix: "!",
+  strictCommandCasing: false,
+});
 
 bot.client.on("ready", () => {
   console.log("Client is ready!");
@@ -22,7 +25,7 @@ bot.command(
     message.reply("isn't this amazing?");
     message.channel.send("this is cool!");
   },
-  { aliases: ["sam"] },
+  { aliases: ["SAm"] },
 );
 
 bot.run();
