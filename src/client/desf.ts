@@ -129,11 +129,11 @@ class Desf {
       const cmd =
         this._commands.get(command) ||
         this._commands.find(
-          (cmd) => (cmd.aliases || false) && cmd.aliases.includes(command),
+          (cmd) => (cmd.aliases || false) && cmd.aliases.includes(command), // https://discordjs.guide/command-handling/adding-features.html#command-aliases
         );
       if (!cmd) return;
 
-      /* START - COOLDOWN */
+      /* START - COOLDOWN: https://discordjs.guide/command-handling/adding-features.html#cooldowns */
       if (this._cooldowns.has(cmd.name)) {
         // get current datetime
         const now = Date.now();
@@ -193,7 +193,7 @@ class Desf {
         }
       }
 
-      /* START GUILDONLY VALIDATION */
+      /* START GUILDONLY VALIDATION: https://discordjs.guide/command-handling/adding-features.html#guild-only-commands */
       if (cmd.guildOnly && message.channel.type === "dm") {
         const check = runParser(cmd.guildOnly.error);
         if (!isValueTrue(check)) return;
@@ -202,7 +202,7 @@ class Desf {
 
       /*  */
 
-      /* START - VALIDATE ARGS */
+      /* START - VALIDATE ARGS: https://discordjs.guide/command-handling/adding-features.html#required-arguments */
       // exact args has priority over minimum and maximum args
       if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
         const check = runParser(cmd.args?.error?.exact);
