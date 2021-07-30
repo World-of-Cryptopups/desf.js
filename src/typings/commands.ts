@@ -4,12 +4,8 @@ export type ICommandFunctionProps = (
   message: Message,
   args: string[],
   options: {
-    client?: Client;
+    client: Client;
   },
-) => void;
-export type ICommandOptionalFunctionProps = (
-  message?: Message,
-  args?: string[],
 ) => void;
 
 export interface ICommandProps extends IOptionCommandProps {
@@ -30,7 +26,7 @@ export type IOptionCommandProps = {
 };
 export type IOptionCommandCooldownProps = {
   seconds?: number;
-  error?: ICommandOptionalFunctionProps;
+  error?: ICommandFunctionProps;
 };
 export type IOptionCommandArgsValuesProps = {
   max?: number;
@@ -38,12 +34,8 @@ export type IOptionCommandArgsValuesProps = {
   exact?: number;
 };
 export type IOptionCommandArgsErrorProps = {
-  [x in keyof IOptionCommandArgsValuesProps]: ICommandOptionalFunctionProps;
+  [x in keyof IOptionCommandArgsValuesProps]: ICommandFunctionProps;
 };
 export type IOptionCommandGuildOnlyProps = {
-  error?: ICommandOptionalFunctionProps;
-};
-
-export type ImportCommandProps = {
-  command: ICommandProps;
+  error?: ICommandFunctionProps;
 };
