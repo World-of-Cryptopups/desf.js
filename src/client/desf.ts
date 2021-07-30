@@ -1,13 +1,15 @@
-import { Client, ClientOptions, Collection } from "discord.js";
+import { Client, ClientOptions, Collection, MessageEmbed } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps,
+  IOptionCommandProps
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
   IErrorFunctionProps,
+  IHelpCommandFunction,
+  IHelpCommandProps
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { isValueTrue, runParser } from "./parse";
@@ -29,6 +31,7 @@ class Desf {
   private _cooldowns: Collection<string, Collection<string, number>>;
   private _errCommandHandler?: IErrorFunctionProps;
   private _errMiddlewareHandler?: IErrorFunctionProps;
+  private _helpFunction?: IHelpCommandProps;
 
   constructor(
     token: string,
@@ -106,11 +109,59 @@ class Desf {
     }
   }
 
+  private _setupHelpCommand() {
+    // if adding auto help is disabled, do nothing
+    if (this._options?.disableAutoHelp) return;
+
+    // generate automatic help command
+    if (!this._helpFunction) {
+      this._helpFunction = {
+        command: "help",
+        f: (message, commands, { client }) => {
+          const emHelp = new MessageEmbed()
+            .setTitle(`Help | ${client.user?.username}`)
+            .setDescription(
+              "These are my defined commands, please use and try them",
+            )
+            .setAuthor(
+              client.user?.username,
+              client.user?.displayAvatarURL() || "",
+            )
+            .setThumbnail(client.user?.displayAvatarURL() || "")
+            .addFields(
+              commands.map((c) => {
+                return {
+                  name: this._options?.prefix + c.name,
+                  value: c.description,
+                };
+              }),
+            )
+            .setFooter(`© ${client.user?.username}`)
+            .setTimestamp(new Date());
+
+          // send help command
+          message.reply(emHelp);
+        },
+      };
+    }
+  }
+
+  setHelp(f: IHelpCommandFunction, command = "help", aliases?: string[]) {
+    this._helpFunction = {
+      f,
+      command,
+      aliases
+    };
+  }
+
   /**
    * `.run()` runs the bot application.
    * All parsing and handling of commands is handled in here.
    */
   run() {
+    // setup help
+    this._setupHelpCommand();
+
     // setup cooldowns
     this._setupCommandCooldowns();
 
@@ -129,6 +180,15 @@ class Desf {
         .split(/ +/);
       let command = args?.shift() || "";
       if (!this._options?.strictCommandCasing) command = command.toLowerCase();
+
+      // HELP - COMMAND
+      if (command === this._helpFunction?.command || this._helpFunction?.aliases?.includes(command)) {
+        this._helpFunction.f(message, this._commands, {
+          client: this.client,
+          args,
+        });
+        return;
+      }
 
       // parse command validation (with aliases if there is)
       const cmd =
