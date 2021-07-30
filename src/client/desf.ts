@@ -2,14 +2,14 @@ import { Client, ClientOptions, Collection, MessageEmbed } from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
-  IOptionCommandProps
+  IOptionCommandProps,
 } from "../typings/commands";
 import {
   DesfOptions,
   IErrorEventOptions,
   IErrorFunctionProps,
   IHelpCommandFunction,
-  IHelpCommandProps
+  IHelpCommandProps,
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
 import { isValueTrue, runParser } from "./parse";
@@ -150,7 +150,7 @@ class Desf {
     this._helpFunction = {
       f,
       command,
-      aliases
+      aliases,
     };
   }
 
@@ -182,7 +182,10 @@ class Desf {
       if (!this._options?.strictCommandCasing) command = command.toLowerCase();
 
       // HELP - COMMAND
-      if (command === this._helpFunction?.command || this._helpFunction?.aliases?.includes(command)) {
+      if (
+        command === this._helpFunction?.command ||
+        this._helpFunction?.aliases?.includes(command)
+      ) {
         this._helpFunction.f(message, this._commands, {
           client: this.client,
           args,

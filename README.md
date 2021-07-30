@@ -15,7 +15,7 @@ const bot = new Desf(process.env.token, { prefix: "!" });
 
 // you can handle other events using the `.client`
 // `message` event is handled in the `.run()` function
-// so it is better for not to have it
+// and defining so, could override the default functionality of the library
 bot.client.on("ready", () => {
   console.log("Client is ready!");
 });
@@ -27,7 +27,7 @@ bot.command("hello", (message, args) => {
 bot.run();
 ```
 
-## Note
+## Limitations
 
 This is only good for small bot applications, please use the default library for larger projects.
 
