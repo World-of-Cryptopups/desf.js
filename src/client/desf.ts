@@ -278,16 +278,16 @@ class Desf {
       /* START - VALIDATE ARGS: https://discordjs.guide/command-handling/adding-features.html#required-arguments */
       if (cmd.args) {
         // exact args has priority over minimum and maximum args
-        if (cmd.args.values?.exact && args.length !== cmd.args.values.exact) {
-          return runParser(cmd.args.error?.exact, [
+        if (cmd.args.exact && args.length !== cmd.args.exact.length) {
+          return runParser(cmd.args.exact.error, [
             message,
             args,
             { client: this.client },
           ]);
         }
 
-        if (cmd.args.values?.min && args.length < cmd.args.values.min) {
-          return runParser(cmd.args.error?.min, [
+        if (cmd.args.min && args.length < cmd.args.min.length) {
+          return runParser(cmd.args.min.error, [
             message,
             args,
             { client: this.client },
@@ -295,8 +295,8 @@ class Desf {
         }
 
         // maximum args
-        if (cmd.args.values?.max && args.length > cmd.args.values.max) {
-          return runParser(cmd.args.error?.max, [
+        if (cmd.args.max && args.length > cmd.args.max.length) {
+          return runParser(cmd.args.max.error, [
             message,
             args,
             { client: this.client },
@@ -304,8 +304,8 @@ class Desf {
         }
 
         // args should be available
-        if (cmd.args.values?.enabled && args.length === 0) {
-          return runParser(cmd.args.error?.enabled, [
+        if (cmd.args.enabled && args.length === 0) {
+          return runParser(cmd.args.enabled.error, [
             message,
             args,
             { client: this.client },

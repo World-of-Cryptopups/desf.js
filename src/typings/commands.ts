@@ -13,29 +13,37 @@ export interface ICommandProps extends IOptionCommandProps {
   execute: ICommandFunctionProps;
 }
 
+// base option
 export type IOptionCommandProps = {
   description?: string;
   aliases?: string[];
   cooldown?: IOptionCommandCooldownProps; // TODO: implement custom number of commands in that duration
   args?: {
-    values?: IOptionCommandArgsValuesProps;
-    error?: IOptionCommandArgsErrorProps;
+    min?: IOptionCommandArgsLengthProps;
+    max?: IOptionCommandArgsLengthProps;
+    exact?: IOptionCommandArgsLengthProps;
+    enabled?: IOptionCommandArgsEnabledProps;
   };
   guildOnly?: IOptionCommandGuildOnlyProps;
 };
+
+// cooldown
 export type IOptionCommandCooldownProps = {
-  seconds?: number;
-  error?: ICommandFunctionProps;
+  seconds: number;
+  error: ICommandFunctionProps;
 };
-export type IOptionCommandArgsValuesProps = {
-  max?: number;
-  min?: number;
-  exact?: number; // main priority over type checking
-  enabled?: boolean; // this is the least priority
+
+// args
+export type IOptionCommandArgsLengthProps = {
+  length: number;
+  error: ICommandFunctionProps;
 };
-export type IOptionCommandArgsErrorProps = {
-  [x in keyof IOptionCommandArgsValuesProps]: ICommandFunctionProps;
+export type IOptionCommandArgsEnabledProps = {
+  enabled: boolean;
+  error: ICommandFunctionProps;
 };
+
+// guild-only
 export type IOptionCommandGuildOnlyProps = {
-  error?: ICommandFunctionProps;
+  error: ICommandFunctionProps;
 };

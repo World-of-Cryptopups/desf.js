@@ -17,23 +17,24 @@ bot.command(
   },
   {
     args: {
-      // if these are not defined, the correspondings errors will not execute
-      values: {
-        min: 1,
-        max: 2,
-        exact: 2, // it takes priority over `min` and `max`
-      },
-      error: {
-        min: (message) => {
+      min: {
+        length: 1,
+        error: (message) => {
           message.reply("Needed atleast 1 argument!");
         },
-        max: (message) => {
+      },
+      max: {
+        length: 3,
+        error: (message) => {
           message.reply("Too much args!");
         },
-        exact: (message) => {
-          message.reply("I need an exact of 2 args!");
-        },
       },
+      // exact: {
+      //   length: 3,
+      //   error: (message) => {
+      //     message.reply("I need an exact of 3 args!");
+      //   },
+      // },
     },
   },
 );
