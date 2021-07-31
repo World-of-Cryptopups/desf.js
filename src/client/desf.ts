@@ -12,7 +12,7 @@ import {
   IHelpCommandProps,
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
-import { isValueTrue, runParser } from "./parse";
+import { runParser } from "./parse";
 
 /**
  * Create a new Desf instance.
@@ -219,12 +219,11 @@ class Desf {
 
           // if not yet expired, run the error handler
           if (now < ex) {
-            const check = runParser(cmd.cooldown?.error, [
+            return runParser(cmd.cooldown?.error, [
               message,
               args,
               { client: this.client },
             ]);
-            if (isValueTrue(check)) return;
           }
         } else {
           ts?.set(message.author.id, now);
@@ -279,7 +278,6 @@ class Desf {
 
       /* START - VALIDATE ARGS: https://discordjs.guide/command-handling/adding-features.html#required-arguments */
       // exact args has priority over minimum and maximum args
-      console.log(args);
       if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
         return runParser(cmd.args?.error?.exact, [
           message,
@@ -289,7 +287,6 @@ class Desf {
       } else {
         // minimum args
         if (cmd.args?.values?.min && args.length < cmd.args.values.min) {
-          console.log("i am here ");
           return runParser(cmd.args?.error?.min, [
             message,
             args,
