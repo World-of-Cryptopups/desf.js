@@ -219,8 +219,12 @@ class Desf {
 
           // if not yet expired, run the error handler
           if (now < ex) {
-            const check = runParser(cmd.cooldown?.error);
-            if (typeof check === "string" || !check) return;
+            const check = runParser(cmd.cooldown?.error, [
+              message,
+              args,
+              { client: this.client },
+            ]);
+            if (isValueTrue(check)) return;
           }
         } else {
           ts?.set(message.author.id, now);
@@ -263,8 +267,11 @@ class Desf {
 
       /* START GUILDONLY VALIDATION: https://discordjs.guide/command-handling/adding-features.html#guild-only-commands */
       if (cmd.guildOnly && message.channel.type === "dm") {
-        const check = runParser(cmd.guildOnly.error);
-        if (!isValueTrue(check)) return;
+        return runParser(cmd.guildOnly.error, [
+          message,
+          args,
+          { client: this.client },
+        ]);
       }
       /* END GUILDONLY VALIDATION */
 
@@ -272,19 +279,30 @@ class Desf {
 
       /* START - VALIDATE ARGS: https://discordjs.guide/command-handling/adding-features.html#required-arguments */
       // exact args has priority over minimum and maximum args
+      console.log(args);
       if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
-        const check = runParser(cmd.args?.error?.exact);
-        if (!isValueTrue(check)) return;
+        return runParser(cmd.args?.error?.exact, [
+          message,
+          args,
+          { client: this.client },
+        ]);
       } else {
         // minimum args
         if (cmd.args?.values?.min && args.length < cmd.args.values.min) {
-          const check = runParser(cmd.args?.error?.min);
-          if (!isValueTrue(check)) return;
+          console.log("i am here ");
+          return runParser(cmd.args?.error?.min, [
+            message,
+            args,
+            { client: this.client },
+          ]);
         }
         // maximum args
         if (cmd.args?.values?.max && args.length > cmd.args.values.max) {
-          const check = runParser(cmd.args?.error?.max);
-          if (!isValueTrue(check)) return;
+          return runParser(cmd.args?.error?.max, [
+            message,
+            args,
+            { client: this.client },
+          ]);
         }
       }
       /* END - VALIDATE ARGS */

@@ -1,24 +1,20 @@
 type AnyFunction = (...args: any[]) => void;
 
 // run the custom function
-const runParser = (f?: AnyFunction): string | boolean | undefined => {
+const runParser = (f: AnyFunction | undefined, args: any[]) => {
+  // even if undefined, return true still
   if (!f) return;
 
   try {
-    f();
+    f(...args);
   } catch (e) {
-    return e;
+    // log error in running function
+    console.error(e);
   }
-
-  return true;
 };
-
-
 
 const isValueTrue = (data: any) => {
   return data === true;
-}
-
-
+};
 
 export { runParser, isValueTrue };
