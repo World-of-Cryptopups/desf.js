@@ -12,6 +12,7 @@ import {
   IHelpCommandProps,
 } from "../typings/desf";
 import { IMiddlewareFunctionProps } from "../typings/middlewares";
+import { generateCommandDesc, generateCommandTitle } from "./help";
 import { runParser } from "./parse";
 
 /**
@@ -131,8 +132,8 @@ class Desf {
             .addFields(
               commands.map((c) => {
                 return {
-                  name: this._options?.prefix + c.name,
-                  value: c.description,
+                  name: generateCommandTitle(this._options?.prefix || "", c),
+                  value: generateCommandDesc(c),
                 };
               }),
             )
@@ -274,28 +275,37 @@ class Desf {
       }
       /* END GUILDONLY VALIDATION */
 
-      /*  */
-
       /* START - VALIDATE ARGS: https://discordjs.guide/command-handling/adding-features.html#required-arguments */
-      // exact args has priority over minimum and maximum args
-      if (cmd.args?.values?.exact && args.length !== cmd.args.values.exact) {
-        return runParser(cmd.args?.error?.exact, [
-          message,
-          args,
-          { client: this.client },
-        ]);
-      } else {
-        // minimum args
-        if (cmd.args?.values?.min && args.length < cmd.args.values.min) {
-          return runParser(cmd.args?.error?.min, [
+      if (cmd.args) {
+        // exact args has priority over minimum and maximum args
+        if (cmd.args.values?.exact && args.length !== cmd.args.values.exact) {
+          return runParser(cmd.args.error?.exact, [
             message,
             args,
             { client: this.client },
           ]);
         }
+
+        if (cmd.args.values?.min && args.length < cmd.args.values.min) {
+          return runParser(cmd.args.error?.min, [
+            message,
+            args,
+            { client: this.client },
+          ]);
+        }
+
         // maximum args
-        if (cmd.args?.values?.max && args.length > cmd.args.values.max) {
-          return runParser(cmd.args?.error?.max, [
+        if (cmd.args.values?.max && args.length > cmd.args.values.max) {
+          return runParser(cmd.args.error?.max, [
+            message,
+            args,
+            { client: this.client },
+          ]);
+        }
+
+        // args should be available
+        if (cmd.args.values?.enabled && args.length === 0) {
+          return runParser(cmd.args.error?.enabled, [
             message,
             args,
             { client: this.client },

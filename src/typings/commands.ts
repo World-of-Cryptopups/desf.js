@@ -21,7 +21,6 @@ export type IOptionCommandProps = {
     values?: IOptionCommandArgsValuesProps;
     error?: IOptionCommandArgsErrorProps;
   };
-  usage?: string;
   guildOnly?: IOptionCommandGuildOnlyProps;
 };
 export type IOptionCommandCooldownProps = {
@@ -31,7 +30,8 @@ export type IOptionCommandCooldownProps = {
 export type IOptionCommandArgsValuesProps = {
   max?: number;
   min?: number;
-  exact?: number;
+  exact?: number; // main priority over type checking
+  enabled?: boolean; // this is the least priority
 };
 export type IOptionCommandArgsErrorProps = {
   [x in keyof IOptionCommandArgsValuesProps]: ICommandFunctionProps;
