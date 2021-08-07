@@ -1,0 +1,8 @@
+# output dir\
+lib
+
+# node_modules
+node_modules
+
+# config files
+*.config.js
