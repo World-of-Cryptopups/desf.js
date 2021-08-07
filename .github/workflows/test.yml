@@ -20,5 +20,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn build
-      - run: yarn lint-all
+      - name: Install deps
+        run: yarn
+      - name: Build Typescript
+        run: yarn build
+      - name: Try lint all
+        run: yarn lint-all
