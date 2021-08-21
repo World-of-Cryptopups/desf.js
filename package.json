@@ -5,7 +5,10 @@
   "types": "./lib/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^12.5.3"
+    "@discordjs/builders": "^0.5.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.22.0",
+    "discord.js": "^13.1.0"
   },
   "devDependencies": {
     "@types/node": "^16.4.2",

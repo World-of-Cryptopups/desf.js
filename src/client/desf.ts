@@ -1,4 +1,10 @@
-import { Client, ClientOptions, Collection, MessageEmbed } from "discord.js";
+import {
+  Client,
+  ClientOptions,
+  Collection,
+  Intents,
+  MessageEmbed,
+} from "discord.js";
 import {
   ICommandFunctionProps,
   ICommandProps,
@@ -41,7 +47,9 @@ class Desf {
   ) {
     this._token = token;
     this._options = { strictCommandCasing: true, ...options };
-    this.client = new Client(clientOptions);
+    this.client = new Client(
+      clientOptions || { intents: [Intents.FLAGS.GUILDS] },
+    );
     this._commands = new Collection();
     this._cooldowns = new Collection();
   }
@@ -125,7 +133,7 @@ class Desf {
               "These are my defined commands, please use and try them",
             )
             .setAuthor(
-              client.user?.username,
+              client.user?.username || "Amazing Bot!",
               client.user?.displayAvatarURL() || "",
             )
             .setThumbnail(client.user?.displayAvatarURL() || "")
@@ -141,7 +149,7 @@ class Desf {
             .setTimestamp(new Date());
 
           // send help command
-          message.reply(emHelp);
+          message.reply({ embeds: [emHelp] });
         },
       };
     }
@@ -266,7 +274,7 @@ class Desf {
       }
 
       /* START GUILDONLY VALIDATION: https://discordjs.guide/command-handling/adding-features.html#guild-only-commands */
-      if (cmd.guildOnly && message.channel.type === "dm") {
+      if (cmd.guildOnly && message.channel.type === "DM") {
         return runParser(cmd.guildOnly.error, [
           message,
           args,
