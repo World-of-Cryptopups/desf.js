@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Client, Message } from "discord.js";
 
 export type ICommandFunctionProps = (

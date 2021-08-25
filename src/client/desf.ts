@@ -47,9 +47,10 @@ class Desf {
   ) {
     this._token = token;
     this._options = { strictCommandCasing: true, ...options };
-    this.client = new Client(
-      clientOptions || { intents: [Intents.FLAGS.GUILDS] },
-    );
+    this.client = new Client({
+      intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+      ...clientOptions,
+    });
     this._commands = new Collection();
     this._cooldowns = new Collection();
   }
@@ -141,7 +142,7 @@ class Desf {
               commands.map((c) => {
                 return {
                   name: generateCommandTitle(this._options?.prefix || "", c),
-                  value: generateCommandDesc(c),
+                  value: generateCommandDesc(c) || "*(none)*",
                 };
               }),
             )
@@ -175,7 +176,7 @@ class Desf {
     this._setupCommandCooldowns();
 
     // on message
-    this.client.on("message", (message) => {
+    this.client.on("messageCreate", (message) => {
       if (
         !message.content.startsWith(this._options?.prefix || "") ||
         message.author.bot

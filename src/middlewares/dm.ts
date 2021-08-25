@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 
-const DoNotDM = (message: Message, args: string[]) => {
-  if (message.channel.type === "dm") {
+const DoNotDM = (message: Message) => {
+  if (message.channel.type === "DM") {
     return false;
   }
 
