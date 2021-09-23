@@ -9,7 +9,6 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-console": "warn",
     "no-empty-function": "error",
     "no-floating-decimal": "error",
     "no-inline-comments": "off",
